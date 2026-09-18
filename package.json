@@ -1,17 +1,23 @@
 {
-  "name": "mtr",
+  "name": "mgm",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON scripts/seed.mjs",
+    "seed:reset": "node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON scripts/seed.mjs --reset"
   },
   "dependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "better-sqlite3": "^13.0.3",
     "next": "16.3.5",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
+    "viem": "^2.56.8"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -20,5 +26,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "typescript": "^5"
-  }
+  },
+  "description": "MGM \u2014 Minara Get My Money: a public, evidence-first refund claim book for tokens rugged on Arc",
+  "license": "MIT"
 }

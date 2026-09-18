@@ -1,0 +1,109 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { STATUS_LABEL, STATUS_ORDER, SUPPORT_THRESHOLD } from "@/lib/types";
+import { StatusBadge } from "@/components/StatusBadge";
+
+export const metadata: Metadata = {
+  title: "How it works",
+  description: "How a refund claim is filed, backed, reviewed and settled on MGM.",
+};
+
+const NOTES: Record<string, string> = {
+  pending: "Published with proof attached. Visible to everyone, open for backing.",
+  reviewing: `Backed by ${SUPPORT_THRESHOLD}+ holders or flagged manually. Evidence is checked against on-chain history.`,
+  verified: "Evidence lines up with the chain. The claim stands on the public record against that contract.",
+  refunded: "Funds were returned to the claimant's wallet. The case closes with the amount recorded.",
+  rejected: "Proof was edited, unrelated or contradicted by the chain. The claim stays visible, marked rejected.",
+};
+
+export default function HowItWorks() {
+  return (
+    <main className="page">
+      <div className="shell" style={{ paddingTop: 40, maxWidth: 880 }}>
+        <div className="crumbs"><Link href="/">Claims</Link> <span>/</span> <span>How it works</span></div>
+
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(30px,4.4vw,44px)", letterSpacing: "-0.035em", margin: "0 0 14px", fontWeight: 600 }}>
+          Evidence first. Then noise.
+        </h1>
+        <p style={{ color: "var(--text-secondary)", fontSize: 15.5, lineHeight: 1.7, maxWidth: "66ch", margin: "0 0 40px" }}>
+          MGM is a public claim book for tokens launched on Arc. Anyone who lost money can file the
+          case here — contract address, screenshots, and a signature from the wallet that actually took
+          the loss. Nothing gets published without all three, and nothing gets deleted because a team
+          asks nicely.
+        </p>
+
+        <div className="steps">
+          <div className="step">
+            <div className="n">01</div>
+            <h3>Sign and file</h3>
+            <p>Connect MetaMask or Rabby, add the Arc contract, the amount and your screenshots, then sign the claim. One signature, no transaction, no gas, no account.</p>
+          </div>
+          <div className="step">
+            <div className="n">02</div>
+            <h3>The market backs it</h3>
+            <p>Other holders vouch for a claim. {SUPPORT_THRESHOLD} backers pushes it into review and onto the trending board.</p>
+          </div>
+          <div className="step">
+            <div className="n">03</div>
+            <h3>It settles in public</h3>
+            <p>Verified, refunded or rejected — the outcome stays attached to the contract address forever.</p>
+          </div>
+        </div>
+
+        <div className="prose" id="evidence">
+          <h2>What counts as proof</h2>
+          <p>A claim is only as strong as the screenshot behind it. What reviewers actually look for:</p>
+          <ul>
+            <li>Your buy transaction on an explorer — the tx hash field makes this checkable in seconds.</li>
+            <li>Wallet or portfolio screen showing the position and what it is worth now.</li>
+            <li>The promise that was broken: the team&apos;s post about a listing, a lock, a partnership.</li>
+            <li>The exit: deleted channel, renounced socials, the dev wallet selling into your bid.</li>
+          </ul>
+
+          <h3>Why the signature matters</h3>
+          <p>
+            Screenshots alone are copyable — anyone could post someone else&apos;s PnL and ask for their
+            refund. So every claim is signed by the wallet that took the loss, over a message that pins
+            down the contract, the amount and how many screenshots came with it. Change any of those
+            after signing and the signature stops matching, which the case page re-checks on every load.
+            The refund address is that same wallet, never a different one.
+          </p>
+          <p>
+            Edited or borrowed screenshots are the fastest way to get a claim marked{" "}
+            <code>rejected</code> — and rejected claims stay public with your contract on them.
+          </p>
+
+          <h2 id="status">Claim statuses</h2>
+          <div className="kv" style={{ gap: 18, marginTop: 20 }}>
+            {STATUS_ORDER.map((s) => (
+              <div key={s} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <span style={{ flex: "none", minWidth: 132 }}><StatusBadge status={s} /></span>
+                <span style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--text-tertiary)" }}>
+                  <b style={{ color: "var(--text-primary)", fontWeight: 600 }}>{STATUS_LABEL[s]}.</b> {NOTES[s]}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <h2>What MGM is not</h2>
+          <p>
+            MGM never asks for a transaction, a token approval or a seed phrase — filing a claim costs
+            one signature and nothing else. MGM does not custody funds, does not promise recovery and
+            does not take a cut of anything returned. It publishes claims with evidence attached so the record follows the contract
+            address. Refunds happen when a team, a launchpad or a community decides to make people whole —
+            a documented, backed claim is what makes that decision possible.
+          </p>
+          <p>
+            Reports are user-submitted. Verify independently before you act on any of them, and never send
+            a seed phrase or private key to anyone offering to &ldquo;recover&rdquo; your funds.
+          </p>
+        </div>
+
+        <div style={{ display: "flex", gap: 12, marginTop: 40, flexWrap: "wrap" }}>
+          <Link className="btn btn-primary btn-lg" href="/submit">File a claim ↗</Link>
+          <Link className="btn btn-ghost btn-lg" href="/#claims">Browse claims ›</Link>
+        </div>
+      </div>
+    </main>
+  );
+}

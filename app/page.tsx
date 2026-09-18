@@ -1,69 +1,98 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from "next/link";
+import { CaseBoard, type SortKey } from "@/components/CaseBoard";
+import { TopClaims } from "@/components/TopClaims";
+import { listCases, getStats } from "@/lib/cases";
+import { usd } from "@/lib/format";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+const PER_PAGE = 24;
+const SORTS: SortKey[] = ["trending", "new", "top", "reviewing", "refunded"];
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ sort?: string; q?: string; page?: string }>;
+}) {
+  const sp = await searchParams;
+  const sort = (SORTS.includes(sp.sort as SortKey) ? sp.sort : "trending") as SortKey;
+  const q = sp.q ?? "";
+  const page = Math.max(1, Number(sp.page) || 1);
+
+  const stats = getStats();
+  const { items, total, pages } = listCases({ sort, q, page, perPage: PER_PAGE });
+  const top = listCases({ sort: "top", perPage: 4 }).items;
+  const ticker = listCases({ sort: "new", perPage: 12 }).items;
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
+    <main className="page">
+      <section className="hero">
+        <div className="shell hero-inner">
+          <span className="hero-eyebrow">
+            <span className="dot" />
+            <b>{stats.totalCases}</b>&nbsp;claims filed · <b>{usd(stats.totalLost)}</b>&nbsp;reported lost
+          </span>
+
           <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
+            Report the scam, prove the loss, <em>claim the refund.</em>
           </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="hero-sub">
+            Minara Get My Money is the public claim book for capital rugged on Arc. Post the contract,
+            attach your screenshots and sign the claim with the wallet that took the loss — no proof and
+            no signature means no claim, which is why the ones here are worth reading.
           </p>
+
+          <div className="hero-actions">
+            <Link className="btn btn-primary btn-lg" href="/submit">File a claim ↗</Link>
+            <Link className="btn btn-ghost btn-lg" href="/how-it-works">How it works ›</Link>
+          </div>
+
+          <div className="stats">
+            <div className="stat">
+              <div className="stat-k">Total reported</div>
+              <div className="stat-v loss">{usd(stats.totalLost)}</div>
+            </div>
+            <div className="stat">
+              <div className="stat-k">Claims filed</div>
+              <div className="stat-v">{stats.totalCases.toLocaleString("en-US")}</div>
+            </div>
+            <div className="stat">
+              <div className="stat-k">Refunded</div>
+              <div className="stat-v good">{usd(stats.totalRefunded)}</div>
+            </div>
+            <div className="stat">
+              <div className="stat-k">Arc contracts flagged</div>
+              <div className="stat-v">{stats.projectsFlagged.toLocaleString("en-US")}</div>
+            </div>
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {ticker.length ? (
+        <div className="marquee" aria-hidden="true">
+          <div className="marquee-track">
+            {[...ticker, ...ticker].map((c, i) => (
+              <span key={`${c.id}-${i}`}>
+                {c.projectName} <b>−{usd(c.amountUsd)}</b> · {c.id}
+              </span>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      ) : null}
+
+      <div className="shell">
+        <TopClaims items={top} />
+        <CaseBoard
+          items={items}
+          total={total}
+          page={page}
+          pages={pages}
+          sort={sort}
+          q={q}
+          perPage={PER_PAGE}
+        />
+      </div>
+    </main>
   );
 }
