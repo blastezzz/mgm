@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { STATUS_LABEL, STATUS_ORDER, SUPPORT_THRESHOLD } from "@/lib/types";
+import { POOL_WALLET, STATUS_LABEL, STATUS_ORDER, SUPPORT_THRESHOLD } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
 
 export const metadata: Metadata = {
@@ -97,6 +97,11 @@ export default function HowItWorks() {
             income. What the pool receives is the creator fee that the launchpad pays out on that
             volume — every bit of it, rather than a share. The bigger the volume, the bigger the
             pool.
+          </p>
+          <p>
+            Both directions run through one public address, so anyone can audit it:{" "}
+            <code style={{ wordBreak: "break-all" }}>{POOL_WALLET}</code> — creator fees arrive here,
+            and every refund is sent from here.
           </p>
           <ul>
             <li>Fees accumulate in the pool wallet, earmarked for payouts and nothing else.</li>

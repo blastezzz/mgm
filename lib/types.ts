@@ -66,6 +66,14 @@ export const CHAIN_LABEL: Record<Chain, string> = { arc: "Arc" };
 /** Optional — set NEXT_PUBLIC_ARC_EXPLORER to link contracts to an explorer. */
 export const ARC_EXPLORER = process.env.NEXT_PUBLIC_ARC_EXPLORER ?? "";
 
+/**
+ * The refund pool: $MGM creator fees are collected here and payouts to verified
+ * claims are sent from here, so the same address is both the destination and
+ * the source people can audit. Override with NEXT_PUBLIC_MGM_POOL_WALLET.
+ */
+export const POOL_WALLET =
+  process.env.NEXT_PUBLIC_MGM_POOL_WALLET?.trim() || "0xf3F8e7220fcD70f28dC5729C41Bcc4d1975dFee1";
+
 export const CATEGORIES: { value: Category; label: string }[] = [
   { value: "rug_pull",         label: "Rug pull" },
   { value: "liquidity_pulled", label: "Liquidity pulled" },

@@ -5,6 +5,7 @@ import { TokenBar } from "@/components/TokenBar";
 import { TopClaims } from "@/components/TopClaims";
 import { listCases, getStats } from "@/lib/cases";
 import { usd } from "@/lib/format";
+import { POOL_WALLET } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -89,10 +90,7 @@ export default async function Home({
       ) : null}
 
       <div className="shell">
-        <RefundPool
-          poolWallet={process.env.NEXT_PUBLIC_MGM_POOL_WALLET?.trim() || null}
-          refunded={stats.totalRefunded}
-        />
+        <RefundPool poolWallet={POOL_WALLET} refunded={stats.totalRefunded} />
         <TopClaims items={top} />
         <CaseBoard
           items={items}

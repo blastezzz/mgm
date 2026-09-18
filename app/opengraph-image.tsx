@@ -24,22 +24,21 @@ export default function OpengraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          {/* the recovery-loop mark, drawn with plain boxes */}
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 999,
-              border: `5px solid ${JADE}`,
-              borderTopColor: "transparent",
-              transform: "rotate(45deg)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div style={{ width: 20, height: 20, background: JADE, display: "flex", transform: "rotate(-45deg)" }} />
-          </div>
+          <svg width="58" height="58" viewBox="0 0 32 32" fill="none">
+            <rect
+              x="4.9"
+              y="4.9"
+              width="22.2"
+              height="22.2"
+              rx="7"
+              stroke={JADE}
+              strokeWidth="3.6"
+              strokeLinecap="round"
+              strokeDasharray="60 18"
+              strokeDashoffset="-9"
+            />
+            <rect x="11.5" y="11.5" width="9" height="9" rx="1.6" fill={JADE} />
+          </svg>
           <div style={{ display: "flex", fontSize: 34, color: "#f5f7f6", fontWeight: 600, letterSpacing: -1 }}>
             mgm<span style={{ color: "#6f7e76" }}>.fund</span>
           </div>

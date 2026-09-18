@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CopyValue } from "./CopyValue";
 import { usd } from "@/lib/format";
 
 /**
@@ -6,7 +7,7 @@ import { usd } from "@/lib/format";
  * trading volume", not "trading volume" — volume is turnover between traders,
  * not income, and promising it outright would be a promise nobody can keep.
  */
-export function RefundPool({ poolWallet, refunded }: { poolWallet: string | null; refunded: number }) {
+export function RefundPool({ poolWallet, refunded }: { poolWallet: string; refunded: number }) {
   return (
     <section className="section">
       <div className="section-head">
@@ -31,12 +32,11 @@ export function RefundPool({ poolWallet, refunded }: { poolWallet: string | null
             Every claim is signed by the wallet that took the loss, so a payout can only ever reach
             the person who actually filed it — never a stranger holding someone else&apos;s screenshot.
           </p>
-          {poolWallet ? (
-            <p style={{ fontFamily: "var(--font-data)", fontSize: 12.5 }}>
-              Pool wallet:{" "}
-              <span style={{ color: "var(--jade-500)", wordBreak: "break-all" }}>{poolWallet}</span>
-            </p>
-          ) : null}
+          <div className="pool-wallet">
+            <span className="k">Pool wallet · fees in, refunds out</span>
+            <CopyValue value={poolWallet} />
+          </div>
+
           <p style={{ marginTop: "var(--space-5)" }}>
             <Link className="btn btn-ghost" href="/how-it-works#pool">How payouts work ›</Link>
           </p>
