@@ -67,10 +67,11 @@ export const CHAIN_LABEL: Record<Chain, string> = { arc: "Arc" };
 export const SOURCE_URL = "https://github.com/blastezzz/mgm";
 
 /**
- * $MGM contract. Empty until the token launches — every surface then shows the
- * address instead of "drops at launch", so there is never a placeholder to copy.
+ * $MGM contract, in EIP-55 checksummed form so a tampered copy is easy to spot.
+ * Override with NEXT_PUBLIC_MGM_CONTRACT if the token is ever redeployed.
  */
-export const MGM_CONTRACT = process.env.NEXT_PUBLIC_MGM_CONTRACT?.trim() || "";
+export const MGM_CONTRACT =
+  process.env.NEXT_PUBLIC_MGM_CONTRACT?.trim() || "0xD23d55C8e9466EE779Ed6C9B049D64355278c752";
 
 /** Support inbox, for questions a claim page cannot answer. */
 export const SUPPORT_EMAIL = "mgmarcsupport@gmail.com";
