@@ -156,6 +156,8 @@ instance, and either configure Vercel Blob or let screenshots land in
 
 ## Support
 
+X: [@mgm_fund](https://x.com/mgm_fund) — where the $MGM contract is announced.
+
 Questions about a claim: **mgmarcsupport@gmail.com** — include the claim ID.
 Support will never ask for a seed phrase, a private key or a transaction.
 

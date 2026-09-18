@@ -66,6 +66,9 @@ export const CHAIN_LABEL: Record<Chain, string> = { arc: "Arc" };
 /** Public repository — linked from the nav and the footer. */
 export const SOURCE_URL = "https://github.com/blastezzz/mgm";
 
+/** The project's X account — where the contract is announced. */
+export const X_URL = "https://x.com/mgm_fund";
+
 /**
  * $MGM contract, in EIP-55 checksummed form so a tampered copy is easy to spot.
  * Override with NEXT_PUBLIC_MGM_CONTRACT if the token is ever redeployed.

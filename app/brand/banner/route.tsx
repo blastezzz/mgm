@@ -102,7 +102,7 @@ export async function GET() {
         </div>
 
         <div style={{ display: "flex", fontSize: 20, color: "#6f7e76" }}>
-          open source · github.com/blastezzz/mgm · mgmarcsupport@gmail.com
+          @mgm_fund · github.com/blastezzz/mgm · mgmarcsupport@gmail.com
         </div>
       </div>
     ),

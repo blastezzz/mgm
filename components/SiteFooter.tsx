@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogoMark } from "./Logo";
 import { CopyValue } from "./CopyValue";
-import { MGM_CONTRACT, POOL_WALLET, SOURCE_URL, SUPPORT_EMAIL } from "@/lib/types";
+import { MGM_CONTRACT, POOL_WALLET, SOURCE_URL, SUPPORT_EMAIL, X_URL } from "@/lib/types";
 import { shortAddr } from "@/lib/format";
 
 export function SiteFooter() {
@@ -45,7 +45,7 @@ export function SiteFooter() {
             <ul>
               <li><a href={SOURCE_URL} target="_blank" rel="noreferrer noopener">Source code on GitHub</a></li>
               <li><a href={`${SOURCE_URL}/blob/main/README.md`} target="_blank" rel="noreferrer noopener">How it is built</a></li>
-              <li><a href="https://x.com" target="_blank" rel="noreferrer noopener">X / Twitter</a></li>
+              <li><a href={X_URL} target="_blank" rel="noreferrer noopener">@mgm_fund on X</a></li>
               <li><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li>
             </ul>
           </div>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { Logo } from "./Logo";
-import { SOURCE_URL } from "@/lib/types";
+import { SOURCE_URL, X_URL } from "@/lib/types";
 import { IconClose, IconGithub, IconMenu, IconSearch, IconX } from "./Icons";
 
 function NavSearchField({ initial }: { initial: string }) {
@@ -69,7 +69,7 @@ export function SiteNav() {
           >
             <IconGithub />
           </a>
-          <a className="icon-btn nav-social" href="https://x.com" target="_blank" rel="noreferrer noopener" aria-label="X">
+          <a className="icon-btn nav-social" href={X_URL} target="_blank" rel="noreferrer noopener" aria-label="X">
             <IconX />
           </a>
           <Link className="btn btn-primary" href="/submit" onClick={() => setMenu(false)}>
@@ -96,7 +96,7 @@ export function SiteNav() {
             <Link href="/?sort=top#claims">Biggest losses <span>›</span></Link>
             <Link href="/?sort=refunded#claims">Refunded <span>›</span></Link>
             <Link href="/how-it-works">How it works <span>›</span></Link>
-            <a href="https://x.com" target="_blank" rel="noreferrer noopener">X / Twitter <span>↗</span></a>
+            <a href={X_URL} target="_blank" rel="noreferrer noopener">@mgm_fund on X <span>↗</span></a>
             <a href={SOURCE_URL} target="_blank" rel="noreferrer noopener">Source code <span>↗</span></a>
           </div>
         </div>

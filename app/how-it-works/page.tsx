@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MGM_CONTRACT, POOL_WALLET, STATUS_LABEL, STATUS_ORDER, SUPPORT_EMAIL, SUPPORT_THRESHOLD } from "@/lib/types";
+import { MGM_CONTRACT, POOL_WALLET, STATUS_LABEL, STATUS_ORDER, SUPPORT_EMAIL, SUPPORT_THRESHOLD, X_URL } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
 
 export const metadata: Metadata = {
@@ -102,8 +102,11 @@ export default function HowItWorks() {
             {MGM_CONTRACT ? (
               <>
                 $MGM contract: <code style={{ wordBreak: "break-all" }}>{MGM_CONTRACT}</code>. Verify it
-                against this page before you trade — it is announced here and on the project&apos;s X
-                account, nowhere else.
+                against this page before you trade — it is announced here and on{" "}
+                <a href={X_URL} target="_blank" rel="noreferrer noopener" style={{ color: "var(--jade-500)" }}>
+                  @mgm_fund
+                </a>
+                , nowhere else.
               </>
             ) : (
               <>
