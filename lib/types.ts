@@ -63,6 +63,12 @@ export const STATUS_ORDER: CaseStatus[] = ["pending", "reviewing", "verified", "
 
 export const CHAIN_LABEL: Record<Chain, string> = { arc: "Arc" };
 
+/** Public repository — linked from the nav and the footer. */
+export const SOURCE_URL = "https://github.com/blastezzz/mgm";
+
+/** Support inbox, for questions a claim page cannot answer. */
+export const SUPPORT_EMAIL = "mgmarcsupport@gmail.com";
+
 /** Optional — set NEXT_PUBLIC_ARC_EXPLORER to link contracts to an explorer. */
 export const ARC_EXPLORER = process.env.NEXT_PUBLIC_ARC_EXPLORER ?? "";
 

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { Logo } from "./Logo";
-import { IconClose, IconMenu, IconSearch, IconX } from "./Icons";
+import { SOURCE_URL } from "@/lib/types";
+import { IconClose, IconGithub, IconMenu, IconSearch, IconX } from "./Icons";
 
 function NavSearchField({ initial }: { initial: string }) {
   const router = useRouter();
@@ -59,6 +60,15 @@ export function SiteNav() {
           <Link className="nav-link" href="/how-it-works" data-active={pathname === "/how-it-works"}>
             How it works
           </Link>
+          <a
+            className="icon-btn nav-social"
+            href={SOURCE_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Source code on GitHub"
+          >
+            <IconGithub />
+          </a>
           <a className="icon-btn nav-social" href="https://x.com" target="_blank" rel="noreferrer noopener" aria-label="X">
             <IconX />
           </a>
@@ -87,6 +97,7 @@ export function SiteNav() {
             <Link href="/?sort=refunded#claims">Refunded <span>›</span></Link>
             <Link href="/how-it-works">How it works <span>›</span></Link>
             <a href="https://x.com" target="_blank" rel="noreferrer noopener">X / Twitter <span>↗</span></a>
+            <a href={SOURCE_URL} target="_blank" rel="noreferrer noopener">Source code <span>↗</span></a>
           </div>
         </div>
       ) : null}

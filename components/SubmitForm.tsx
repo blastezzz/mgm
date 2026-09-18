@@ -6,7 +6,7 @@ import { ProofDropzone, type PickedProof } from "./ProofDropzone";
 import { WalletConnect } from "./WalletConnect";
 import { IconCheck, IconShield, IconSpinner } from "./Icons";
 import { LIMITS, validateDraft, type Errors } from "@/lib/validate";
-import { CATEGORIES, type Category } from "@/lib/types";
+import { CATEGORIES, SUPPORT_EMAIL, type Category } from "@/lib/types";
 import { claimMessage, normalizeAmount } from "@/lib/signing";
 import { useWallet, WalletError } from "@/lib/wallet";
 import { usd } from "@/lib/format";
@@ -402,6 +402,7 @@ export function SubmitForm() {
           <span>
             <b>MGM never asks for a transaction.</b> Filing a claim costs one signature and nothing
             else. Never share a seed phrase, and never approve a token spend to &ldquo;recover&rdquo; funds.
+            Stuck? <a href={`mailto:${SUPPORT_EMAIL}`} style={{ color: "var(--jade-500)" }}>{SUPPORT_EMAIL}</a>
           </span>
         </div>
       </aside>

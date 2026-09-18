@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import { isAdmin } from "@/lib/request";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,7 +10,7 @@ export const dynamic = "force-dynamic";
  * secret. Reports which integrations are present and whether a trivial query
  * against the database succeeds.
  */
-export async function GET() {
+export async function GET(req: Request) {
   const env = {
     databaseUrl: Boolean(process.env.DATABASE_URL ?? process.env.POSTGRES_URL),
     blob: Boolean(process.env.BLOB_READ_WRITE_TOKEN ?? process.env.BLOB_STORE_ID),
@@ -18,10 +19,11 @@ export async function GET() {
     salt: Boolean(process.env.MGM_SALT),
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? null,
     vercel: Boolean(process.env.VERCEL),
-    // names only, never values — shows when an integration used a prefixed name
-    storageVars: Object.keys(process.env)
-      .filter((k) => /BLOB|POSTGRES|DATABASE|NEON/i.test(k))
-      .sort(),
+    // variable names help diagnose a prefixed integration, but they describe the
+    // infrastructure, so they are only listed for an authenticated caller
+    storageVars: isAdmin(req)
+      ? Object.keys(process.env).filter((k) => /BLOB|POSTGRES|DATABASE|NEON/i.test(k)).sort()
+      : undefined,
   };
 
   let db: { ok: boolean; claims?: number; error?: string };

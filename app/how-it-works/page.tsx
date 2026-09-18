@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { POOL_WALLET, STATUS_LABEL, STATUS_ORDER, SUPPORT_THRESHOLD } from "@/lib/types";
+import { POOL_WALLET, STATUS_LABEL, STATUS_ORDER, SUPPORT_EMAIL, SUPPORT_THRESHOLD } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
 
 export const metadata: Metadata = {
@@ -121,6 +121,14 @@ export default function HowItWorks() {
           <p>
             Reports are user-submitted. Verify independently before you act on any of them, and never send
             a seed phrase or private key to anyone offering to &ldquo;recover&rdquo; your funds.
+          </p>
+
+          <h2 id="support">Questions</h2>
+          <p>
+            Stuck on a claim, spotted something wrong with one, or need a case corrected? Write to{" "}
+            <a href={`mailto:${SUPPORT_EMAIL}`} style={{ color: "var(--jade-500)" }}>{SUPPORT_EMAIL}</a>.
+            Include your claim ID — it is the fastest way to get an answer. Support will never ask you
+            for a seed phrase, a private key or a transaction.
           </p>
         </div>
 

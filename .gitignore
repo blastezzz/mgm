@@ -45,3 +45,8 @@ next-env.d.ts
 /public/uploads/*
 !/public/uploads/.gitkeep
 .env.local
+
+# local tooling (agent/editor config, not part of the project)
+/.claude
+CLAUDE.md
+AGENTS.md

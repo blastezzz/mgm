@@ -1,18 +1,20 @@
-# MGM — Minara Get My Money (`mgm.fund`)
+# MGM — Minara Get My Money
 
-A public claim book for capital rugged on **Arc**: anyone who lost money on a token
-can file a case with the contract address, the amount, **mandatory screenshot
-evidence** and a **wallet signature** proving the loss is theirs. Claims are
-published, backed by other holders, and settled in the open.
+**[mgm.fund](https://mgm.fund)** — a public claim book for capital rugged on **Arc**.
 
-Visual language follows minara.fun — jade on near-black, Instrument Sans display,
-Geist UI, Geist Mono for every number and address.
+Anyone who lost money on a token files a case with the contract address, the
+amount, **screenshot evidence** and a **wallet signature** proving the loss is
+theirs. Claims are published, backed by other holders, and settled in the open.
+Payouts come from the refund pool, funded by the project's own token.
+
+Dark, data-dense interface: jade on near-black, Instrument Sans for display
+type, Geist for UI, Geist Mono for every number and address.
 
 ## Stack
 
-| Layer     | Choice                                                    |
-| --------- | --------------------------------------------------------- |
-| Framework | Next.js 16 (App Router, Turbopack), TypeScript             |
+| Layer     | Choice                                                      |
+| --------- | ----------------------------------------------------------- |
+| Framework | Next.js 16 (App Router, Turbopack), TypeScript               |
 | Styling   | Hand-rolled design tokens in `app/globals.css` — no Tailwind |
 | Storage   | Postgres — Neon serverless in production, [PGlite](https://pglite.dev) (Postgres in WASM) locally |
 | Uploads   | Vercel Blob in production, `public/uploads` locally — both validated by magic bytes |
@@ -22,120 +24,141 @@ Geist UI, Geist Mono for every number and address.
 
 ```bash
 npm install
-npm run seed      # optional: 12 demo claims, each signed by a throwaway wallet
-npm run dev       # http://localhost:3000
+npm run seed   # optional: 12 demo claims, each signed by a throwaway wallet
+npm run dev    # http://localhost:3000
 ```
 
-No database to install and no accounts to create: with `DATABASE_URL` unset the
-app boots PGlite, a real Postgres compiled to WASM, and keeps it in
+No database to install and no accounts to create. With `DATABASE_URL` unset the
+app boots PGlite — a real Postgres compiled to WASM — and keeps it in
 `./data/pgdata`. Same SQL as production, so nothing drifts between the two.
 
-Production:
-
 ```bash
-npm run build && npm start
+npm run build && npm start   # production build
 ```
 
 ### Environment
 
-Copy `.env.example` to `.env.local`:
+Copy `.env.example` to `.env.local`. Everything is optional for local work.
 
-| Variable               | Purpose                                                        |
-| ---------------------- | -------------------------------------------------------------- |
-| `DATABASE_URL`           | Postgres connection string. Unset ⇒ local PGlite.              |
-| `BLOB_READ_WRITE_TOKEN`  | Vercel Blob token. Unset ⇒ screenshots go to `public/uploads`. |
-| `MGM_ADMIN_KEY`          | Unlocks `/admin`. Unset ⇒ moderation is fully disabled.        |
-| `MGM_SALT`               | Salt for visitor fingerprints (vote dedupe + rate limiting).   |
-| `NEXT_PUBLIC_SITE_URL`   | Absolute URL used in OG metadata.                              |
-| `NEXT_PUBLIC_ARC_EXPLORER` | Optional — Arc explorer base URL; set it and every claim links its contract. |
-| `NEXT_PUBLIC_MGM_CONTRACT` | $MGM contract shown (and copyable) on the home page. Unset ⇒ "CA drops at launch". |
-| `NEXT_PUBLIC_MGM_CHART`  | Optional — chart link shown beside the contract.               |
-| `NEXT_PUBLIC_MGM_POOL_WALLET` | Optional — public refund-pool address, shown for transparency. |
-| `MGM_DATA_DIR`           | Optional — move the local PGlite directory elsewhere.          |
+| Variable                      | Purpose                                                            |
+| ----------------------------- | ------------------------------------------------------------------ |
+| `DATABASE_URL`                | Postgres connection string. Unset ⇒ local PGlite.                   |
+| `BLOB_READ_WRITE_TOKEN`       | Vercel Blob token. On Vercel a connected Blob store authenticates through OIDC with `BLOB_STORE_ID` instead, so this is usually unnecessary. Neither set ⇒ screenshots go to `public/uploads`. |
+| `MGM_ADMIN_KEY`               | Unlocks `/admin`. Unset ⇒ moderation is disabled entirely.          |
+| `MGM_SALT`                    | Salt for visitor fingerprints (vote dedupe + rate limits).          |
+| `NEXT_PUBLIC_SITE_URL`        | Absolute site URL, used for OG metadata.                            |
+| `NEXT_PUBLIC_MGM_CONTRACT`    | $MGM contract shown and copyable on the home page. Unset ⇒ "CA drops at launch". |
+| `NEXT_PUBLIC_MGM_CHART`       | Optional — chart link beside the contract.                          |
+| `NEXT_PUBLIC_MGM_POOL_WALLET` | Optional — overrides the refund-pool address (default in `lib/types.ts`). |
+| `NEXT_PUBLIC_ARC_EXPLORER`    | Optional — Arc explorer base URL; enables the contract link on each claim. |
+| `MGM_DATA_DIR`                | Optional — move the local PGlite directory elsewhere.               |
 
 ## Pages
 
-| Route             | What it does                                                             |
-| ----------------- | ------------------------------------------------------------------------ |
-| `/`               | Hero + live stats, largest open claims, full board with sort/search/filter, grid ⇄ list |
-| `/submit`         | The claim form — connect wallet, live card preview, checklist, screenshots required, claim signed before it is sent |
-| `/case/[id]`      | Full case: story, proof gallery, progress timeline, backing, contract data |
-| `/how-it-works`   | Evidence rules and what each status means                                 |
-| `/admin`          | Key-gated moderation: change status, add a reviewer note, delete a claim  |
+| Route           | What it does                                                               |
+| --------------- | -------------------------------------------------------------------------- |
+| `/`             | Hero, $MGM contract bar, live stats, refund pool, largest claims, full board with sort/search and grid ⇄ list |
+| `/submit`       | The claim form — connect wallet, live card preview, checklist, screenshots required, signed before it is sent |
+| `/case/[id]`    | Full case: story, proof gallery, status timeline, backing, contract data, signature re-checked on load |
+| `/how-it-works` | Evidence rules, claim statuses, where refund money comes from               |
+| `/admin`        | Key-gated moderation: change status, add a reviewer note, delete a claim    |
 
 ## API
 
-| Method | Route                       | Notes                                                     |
-| ------ | --------------------------- | ---------------------------------------------------------- |
-| `POST` | `/api/wallet/nonce`         | Issues the single-use challenge the wallet signs (10 min TTL) |
-| `POST` | `/api/cases`                | multipart. Validates every field, sniffs image magic bytes, verifies the signature, burns the nonce; 5 claims/hour per visitor, 3 per wallet |
-| `POST` | `/api/cases/:id/support`    | One vote per visitor fingerprint                            |
-| `GET`  | `/api/admin/cases`          | Requires `x-msr-admin`                                      |
-| `PATCH`/`DELETE` | `/api/admin/cases/:id` | Status + reviewer note, or delete claim and its files   |
+| Method            | Route                    | Notes                                                   |
+| ----------------- | ------------------------ | -------------------------------------------------------- |
+| `POST`            | `/api/wallet/nonce`      | Single-use challenge for the wallet to sign (10 min TTL)  |
+| `POST`            | `/api/cases`             | multipart. Validates every field, sniffs image magic bytes, verifies the signature, burns the nonce; 5 claims/hour per visitor, 3 per wallet |
+| `POST`            | `/api/cases/:id/support` | One backing vote per visitor fingerprint                  |
+| `GET`             | `/api/health`            | Whether storage is wired up; never returns secret values  |
+| `GET`             | `/api/admin/cases`       | Requires the `x-mgm-admin` header                         |
+| `PATCH`/`DELETE`  | `/api/admin/cases/:id`   | Status + reviewer note, or delete a claim and its files   |
 
 ## The $MGM token and the refund pool
 
-The site is funded by its own token. **100% of the creator fees generated by
+The site is funded by its own token: **100% of the creator fees generated by
 $MGM trading volume** goes into the refund pool, which pays out to the wallets
 attached to verified claims — the same wallets that signed those claims.
 
-The wording matters and the code sticks to it: *creator fees from trading
-volume*, never "trading volume", because volume is turnover between traders
-rather than income. Promising the latter would be a promise nobody can keep.
+Fees arrive at, and refunds are paid from, one public address anyone can audit:
+`0xf3F8e7220fcD70f28dC5729C41Bcc4d1975dFee1`.
 
-The contract address bar on the home page reads "CA drops at launch" until
-`NEXT_PUBLIC_MGM_CONTRACT` is set, so there is never a placeholder address
-somebody could copy by mistake.
+The wording is deliberate and the code sticks to it: *creator fees from trading
+volume*, never "trading volume". Volume is turnover between traders rather than
+income, so promising it outright would be a promise nobody can keep.
 
 ## Claim lifecycle
 
 `Awaiting review → Under review → Verified → Refunded`, with `Rejected` as the
-dead end. A claim reaching **100 backers** is what pushes it into review
+dead end. A claim reaching **100 backers** is escalated into review
 (`SUPPORT_THRESHOLD` in `lib/types.ts`).
 
 ## Rules baked into the code
 
-- **No proof, no claim.** The form and the API both reject a submission without at
-  least one screenshot; uploads are verified by magic bytes, not by the mime type
-  the browser reports.
-- **No signature, no claim.** The claimant signs a message binding the wallet, the
-  contract, the amount and the proof count. The server rebuilds that exact message,
-  verifies it with `viem`, and burns the nonce — so a signature cannot be replayed,
-  reused for a different amount, or produced by anyone but the wallet owner. Someone
-  else's PnL screenshot gets a stranger nowhere: the refund address *is* the signer.
-- The stored `signed_nonce` **and `signed_site`** let any case page re-verify the
-  signature later — every claim page re-checks it server-side on load and shows the
-  result. Because the domain is stored per claim, renaming the site or moving domains
-  never invalidates signatures collected under the old one.
+- **No proof, no claim.** The form and the API both reject a submission without
+  at least one screenshot, and uploads are identified by magic bytes rather than
+  the mime type the browser reports.
+- **No signature, no claim.** The claimant signs a message binding the wallet,
+  the contract, the amount and the proof count. The server rebuilds that exact
+  message, verifies it with `viem` and burns the nonce, so a signature cannot be
+  replayed, reused for a different amount, or produced by anyone but the wallet
+  owner. Someone else's PnL screenshot gets a stranger nowhere: the refund
+  address *is* the signer.
+- **Signatures stay auditable.** Each claim stores its nonce and the domain it
+  was signed under, so every case page re-verifies server-side on load — and
+  renaming the site or moving domains never invalidates signatures collected
+  earlier.
 - Arc only: contract addresses are `0x` + 40 hex.
 - One backing vote per visitor fingerprint; 5 claims/hour per visitor, 3 per wallet.
 
 ## Wallet support
 
 Wallets are discovered through **EIP-6963**, so every injected wallet announces
-itself with its own name and icon — no hardcoded provider sniffing, no
+itself with its own name and icon — no provider sniffing and no
 `window.ethereum` collisions when several extensions are installed. MetaMask and
-Rabby are promoted explicitly: if one is missing, the connect sheet shows its
-brand icon (`public/wallets/`) with an install link instead of a dead button.
+Rabby are promoted explicitly: when one is missing, the connect sheet shows its
+brand icon with an install link instead of a dead button.
+
+## Brand assets
+
+Rendered from the same logo geometry, so they never drift apart:
+
+| Asset            | Route             | Size     |
+| ---------------- | ----------------- | -------- |
+| Social card      | `/opengraph-image`| 1200×630 |
+| X avatar         | `/brand/avatar`   | 400×400  |
+| X header         | `/brand/banner`   | 1500×500 |
+
+Exported copies live in `public/brand/`.
 
 ## Deploying to Vercel
 
-1. **Import the repo** at [vercel.com/new](https://vercel.com/new) — framework
-   detection and build settings need no changes.
-2. **Storage → Create Database → Neon.** Connecting it to the project sets
-   `DATABASE_URL` automatically. The schema creates itself on first request.
-3. **Storage → Create → Blob.** That sets `BLOB_READ_WRITE_TOKEN`.
-4. **Settings → Environment Variables**, add:
-   - `MGM_ADMIN_KEY` — any long random string; it gates `/admin`
-   - `MGM_SALT` — any long random string
-   - `NEXT_PUBLIC_SITE_URL` — `https://your-domain`
-5. **Deploy**, then point the domain at the project under Settings → Domains.
+1. **Import the repo** at [vercel.com/new](https://vercel.com/new) — no build
+   setting needs changing.
+2. **Storage → Create Database → Neon**, connect it to the project. That sets
+   `DATABASE_URL`; the schema creates itself on first request.
+3. **Storage → Create → Blob**, connect it to the project. It injects
+   `BLOB_STORE_ID` and the deployment authenticates through OIDC — a
+   `BLOB_READ_WRITE_TOKEN` is not required.
+4. **Settings → Environment Variables**: `MGM_ADMIN_KEY`, `MGM_SALT` (long
+   random strings) and `NEXT_PUBLIC_SITE_URL`.
+5. **Redeploy.** Storage variables only reach a deployment built after they were
+   added, so connecting an integration always needs a fresh deploy.
 
-To put the demo claims on a deployed database:
-`DATABASE_URL="…" npm run seed` (leave it out entirely for a clean board).
+`GET /api/health` reports which integrations the running deployment can see —
+check it first if something misbehaves.
 
 ### Anywhere else
 
-Any host that runs Node works the same way: set `DATABASE_URL` to a Postgres
-instance, and either set `BLOB_READ_WRITE_TOKEN` or let screenshots land in
+Any host that runs Node works the same way: point `DATABASE_URL` at a Postgres
+instance, and either configure Vercel Blob or let screenshots land in
 `public/uploads` on a persistent disk.
+
+## Support
+
+Questions about a claim: **mgmarcsupport@gmail.com** — include the claim ID.
+Support will never ask for a seed phrase, a private key or a transaction.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
