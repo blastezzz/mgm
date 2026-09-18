@@ -14,17 +14,21 @@ Geist UI, Geist Mono for every number and address.
 | --------- | --------------------------------------------------------- |
 | Framework | Next.js 16 (App Router, Turbopack), TypeScript             |
 | Styling   | Hand-rolled design tokens in `app/globals.css` — no Tailwind |
-| Storage   | SQLite via `better-sqlite3` → `data/mgm.db` (WAL)          |
-| Uploads   | Local disk → `public/uploads`, validated by magic bytes     |
+| Storage   | Postgres — Neon serverless in production, [PGlite](https://pglite.dev) (Postgres in WASM) locally |
+| Uploads   | Vercel Blob in production, `public/uploads` locally — both validated by magic bytes |
 | Wallets   | EIP-6963 discovery (MetaMask, Rabby), `personal_sign`, verified server-side with `viem` |
 
 ## Run it
 
 ```bash
 npm install
-npm run seed      # optional: 12 demo claims with generated proof images
+npm run seed      # optional: 12 demo claims, each signed by a throwaway wallet
 npm run dev       # http://localhost:3000
 ```
+
+No database to install and no accounts to create: with `DATABASE_URL` unset the
+app boots PGlite, a real Postgres compiled to WASM, and keeps it in
+`./data/pgdata`. Same SQL as production, so nothing drifts between the two.
 
 Production:
 
@@ -38,11 +42,13 @@ Copy `.env.example` to `.env.local`:
 
 | Variable               | Purpose                                                        |
 | ---------------------- | -------------------------------------------------------------- |
+| `DATABASE_URL`           | Postgres connection string. Unset ⇒ local PGlite.              |
+| `BLOB_READ_WRITE_TOKEN`  | Vercel Blob token. Unset ⇒ screenshots go to `public/uploads`. |
 | `MGM_ADMIN_KEY`          | Unlocks `/admin`. Unset ⇒ moderation is fully disabled.        |
 | `MGM_SALT`               | Salt for visitor fingerprints (vote dedupe + rate limiting).   |
 | `NEXT_PUBLIC_SITE_URL`   | Absolute URL used in OG metadata.                              |
 | `NEXT_PUBLIC_ARC_EXPLORER` | Optional — Arc explorer base URL; set it and every claim links its contract. |
-| `MGM_DATA_DIR`           | Optional — move the SQLite file off the project directory.     |
+| `MGM_DATA_DIR`           | Optional — move the local PGlite directory elsewhere.          |
 
 ## Pages
 
@@ -95,10 +101,24 @@ itself with its own name and icon — no hardcoded provider sniffing, no
 Rabby are promoted explicitly: if one is missing, the connect sheet shows its
 brand icon (`public/wallets/`) with an install link instead of a dead button.
 
-## Deploying
+## Deploying to Vercel
 
-Everything writes to disk (`data/`, `public/uploads/`), so run it on a host with a
-persistent filesystem — a VPS, Fly.io, Railway, a container with a volume. On a
-read-only/serverless filesystem (e.g. Vercel) swap `lib/db.ts` for a hosted
-database and `lib/uploads.ts` for object storage; both are isolated behind those
-two modules for exactly that reason.
+1. **Import the repo** at [vercel.com/new](https://vercel.com/new) — framework
+   detection and build settings need no changes.
+2. **Storage → Create Database → Neon.** Connecting it to the project sets
+   `DATABASE_URL` automatically. The schema creates itself on first request.
+3. **Storage → Create → Blob.** That sets `BLOB_READ_WRITE_TOKEN`.
+4. **Settings → Environment Variables**, add:
+   - `MGM_ADMIN_KEY` — any long random string; it gates `/admin`
+   - `MGM_SALT` — any long random string
+   - `NEXT_PUBLIC_SITE_URL` — `https://your-domain`
+5. **Deploy**, then point the domain at the project under Settings → Domains.
+
+To put the demo claims on a deployed database:
+`DATABASE_URL="…" npm run seed` (leave it out entirely for a clean board).
+
+### Anywhere else
+
+Any host that runs Node works the same way: set `DATABASE_URL` to a Postgres
+instance, and either set `BLOB_READ_WRITE_TOKEN` or let screenshots land in
+`public/uploads` on a persistent disk.

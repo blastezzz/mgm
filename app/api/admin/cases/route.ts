@@ -10,6 +10,6 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const status = (url.searchParams.get("status") ?? "all") as CaseStatus | "all";
   const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-  const data = listCases({ sort: "new", status, q: url.searchParams.get("q") ?? "", page, perPage: 40 });
+  const data = await listCases({ sort: "new", status, q: url.searchParams.get("q") ?? "", page, perPage: 40 });
   return NextResponse.json(data);
 }

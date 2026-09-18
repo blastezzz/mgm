@@ -1,9 +1,16 @@
+import "server-only";
 import { randomBytes } from "node:crypto";
-import fs from "node:fs/promises";
-import path from "node:path";
 import { LIMITS } from "./validate";
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+/**
+ * Proof screenshots go to Vercel Blob when a token is configured (production)
+ * and to ./public/uploads otherwise, so a fresh clone runs with no accounts.
+ * Stored paths are whatever the destination returns: an absolute Blob URL, or
+ * a site-relative /uploads/… path. Both work straight in <img src>.
+ */
+
+const UPLOAD_DIR_SEGMENTS = ["public", "uploads"] as const;
+const blobToken = () => process.env.BLOB_READ_WRITE_TOKEN;
 
 const SIGNATURES: { ext: string; mime: string; test: (b: Buffer) => boolean }[] = [
   { ext: "png",  mime: "image/png",  test: (b) => b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) },
@@ -16,13 +23,32 @@ export type SavedProof = { path: string; name: string | null; size: number };
 
 export class UploadError extends Error {}
 
+async function writeLocal(name: string, buf: Buffer): Promise<string> {
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const dir = path.join(process.cwd(), ...UPLOAD_DIR_SEGMENTS);
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(path.join(dir, name), buf);
+  return `/uploads/${name}`;
+}
+
+async function writeBlob(name: string, buf: Buffer, mime: string): Promise<string> {
+  const { put } = await import("@vercel/blob");
+  const res = await put(`proofs/${name}`, buf, {
+    access: "public",
+    contentType: mime,
+    token: blobToken(),
+    addRandomSuffix: false,
+  });
+  return res.url;
+}
+
 /**
- * Writes proof screenshots to /public/uploads. Every file is sniffed by magic
- * bytes — the browser-reported mime type is never trusted.
+ * Validates every file by magic bytes — the browser-reported mime type is
+ * never trusted — then stores it.
  */
 export async function saveProofs(files: File[]): Promise<SavedProof[]> {
   if (files.length > LIMITS.proofsMax) throw new UploadError(`Up to ${LIMITS.proofsMax} screenshots`);
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
 
   const saved: SavedProof[] = [];
   try {
@@ -37,8 +63,8 @@ export async function saveProofs(files: File[]): Promise<SavedProof[]> {
       if (!sig) throw new UploadError(`"${file.name}" is not a PNG, JPG, WEBP or GIF image`);
 
       const name = `${Date.now().toString(36)}-${randomBytes(6).toString("hex")}.${sig.ext}`;
-      await fs.writeFile(path.join(UPLOAD_DIR, name), buf);
-      saved.push({ path: `/uploads/${name}`, name: file.name.slice(0, 120) || null, size: buf.length });
+      const path = blobToken() ? await writeBlob(name, buf, sig.mime) : await writeLocal(name, buf);
+      saved.push({ path, name: file.name.slice(0, 120) || null, size: buf.length });
     }
   } catch (err) {
     await removeProofs(saved.map((s) => s.path));
@@ -48,11 +74,28 @@ export async function saveProofs(files: File[]): Promise<SavedProof[]> {
 }
 
 export async function removeProofs(paths: string[]): Promise<void> {
-  await Promise.all(
-    paths.map(async (p) => {
-      const base = path.basename(p);
-      if (!p.startsWith("/uploads/") || base !== p.slice("/uploads/".length)) return;
-      await fs.rm(path.join(UPLOAD_DIR, base), { force: true });
-    }),
-  );
+  const blobs = paths.filter((p) => /^https?:\/\//.test(p));
+  const locals = paths.filter((p) => p.startsWith("/uploads/"));
+
+  if (blobs.length) {
+    try {
+      const { del } = await import("@vercel/blob");
+      await del(blobs, { token: blobToken() });
+    } catch (err) {
+      console.error("[mgm] could not delete blobs", err);
+    }
+  }
+
+  if (locals.length) {
+    const fs = await import("node:fs/promises");
+    const path = await import("node:path");
+    const dir = path.join(process.cwd(), ...UPLOAD_DIR_SEGMENTS);
+    await Promise.all(
+      locals.map(async (p) => {
+        const base = path.basename(p);
+        if (base !== p.slice("/uploads/".length)) return; // reject traversal
+        await fs.rm(path.join(dir, base), { force: true });
+      }),
+    );
+  }
 }

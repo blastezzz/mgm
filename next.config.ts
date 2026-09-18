@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // native SQLite bindings must stay out of the bundle
-  serverExternalPackages: ["better-sqlite3"],
+  // the WASM Postgres used for local dev must not be bundled
+  serverExternalPackages: ["@electric-sql/pglite"],
 };
 
 export default nextConfig;

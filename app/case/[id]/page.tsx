@@ -17,7 +17,7 @@ type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ new?: st
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const c = getCase(id);
+  const c = await getCase(id);
   if (!c) return { title: "Claim not found" };
   return {
     title: `${c.projectName} — ${usd(c.amountUsd)} refund claim`,
@@ -36,13 +36,13 @@ const TIMELINE: { status: CaseStatus; blurb: string }[] = [
 export default async function CasePage({ params, searchParams }: Props) {
   const { id } = await params;
   const { new: isNew } = await searchParams;
-  const c = getCase(id);
+  const c = await getCase(id);
   if (!c) notFound();
 
-  bumpViews(c.id);
+  void bumpViews(c.id);
 
   const signature = await verifyClaim(c);
-  const related = listCases({ contract: c.contract, sort: "top", perPage: 5 }).items.filter((x) => x.id !== c.id).slice(0, 4);
+  const related = (await listCases({ contract: c.contract, sort: "top", perPage: 5 })).items.filter((x) => x.id !== c.id).slice(0, 4);
   const explorer = explorerUrl(c.contract);
   const reachedIndex = TIMELINE.findIndex((t) => t.status === c.status);
   const rejected = c.status === "rejected";

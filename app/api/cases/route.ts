@@ -27,7 +27,7 @@ export async function POST(req: Request) {
   }
 
   const author = visitorId(req);
-  if (recentCountByAuthor(author) >= MAX_PER_HOUR) {
+  if ((await recentCountByAuthor(author)) >= MAX_PER_HOUR) {
     return NextResponse.json({ error: `You can file ${MAX_PER_HOUR} claims per hour. Try again later.` }, { status: 429 });
   }
 
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Some fields need fixing", errors }, { status: 422 });
   }
 
-  if (recentCountByWallet(walletAddress) >= MAX_PER_WALLET_HOUR) {
+  if ((await recentCountByWallet(walletAddress)) >= MAX_PER_WALLET_HOUR) {
     return NextResponse.json(
       { error: `This wallet already filed ${MAX_PER_WALLET_HOUR} claims in the last hour.` },
       { status: 429 },
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing wallet signature", errors: { walletAddress: "Sign the claim with your wallet" } }, { status: 422 });
   }
 
-  const challenge = consumeNonce(nonce, walletAddress);
+  const challenge = await consumeNonce(nonce, walletAddress);
   if (!challenge.ok) {
     return NextResponse.json({ error: challenge.reason, errors: { walletAddress: challenge.reason } }, { status: 422 });
   }
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
   let saved: { path: string; name: string | null; size: number }[] = [];
   try {
     saved = await saveProofs(files);
-    const created = createCase({
+    const created = await createCase({
       projectName: draft.projectName,
       ticker: draft.ticker ? draft.ticker.toUpperCase().replace(/^\$/, "") : null,
       contract,

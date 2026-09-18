@@ -14,7 +14,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (!STATUS_ORDER.includes(body.status as CaseStatus)) {
     return NextResponse.json({ error: "Unknown status" }, { status: 400 });
   }
-  const updated = setStatus(id, body.status as CaseStatus, body.note?.slice(0, 500) ?? null);
+  const updated = await setStatus(id, body.status as CaseStatus, body.note?.slice(0, 500) ?? null);
   if (!updated) return NextResponse.json({ error: "Claim not found" }, { status: 404 });
   return NextResponse.json({ case: updated });
 }
@@ -22,8 +22,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  if (!getCase(id)) return NextResponse.json({ error: "Claim not found" }, { status: 404 });
-  const paths = deleteCase(id);
+  if (!(await getCase(id))) return NextResponse.json({ error: "Claim not found" }, { status: 404 });
+  const paths = await deleteCase(id);
   await removeProofs(paths);
   return NextResponse.json({ ok: true });
 }

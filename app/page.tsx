@@ -19,10 +19,10 @@ export default async function Home({
   const q = sp.q ?? "";
   const page = Math.max(1, Number(sp.page) || 1);
 
-  const stats = getStats();
-  const { items, total, pages } = listCases({ sort, q, page, perPage: PER_PAGE });
-  const top = listCases({ sort: "top", perPage: 4 }).items;
-  const ticker = listCases({ sort: "new", perPage: 12 }).items;
+  const stats = await getStats();
+  const { items, total, pages } = await listCases({ sort, q, page, perPage: PER_PAGE });
+  const top = (await listCases({ sort: "top", perPage: 4 })).items;
+  const ticker = (await listCases({ sort: "new", perPage: 12 })).items;
 
   return (
     <main className="page">

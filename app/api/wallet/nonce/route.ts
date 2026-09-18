@@ -13,6 +13,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Connect a valid wallet first" }, { status: 400 });
   }
 
-  const { nonce, issuedAt } = issueNonce(address);
+  const { nonce, issuedAt } = await issueNonce(address);
   return NextResponse.json({ nonce, issuedAt });
 }

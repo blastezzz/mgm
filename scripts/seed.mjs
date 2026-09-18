@@ -10,7 +10,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { db } from "../lib/db.ts";
+import { batch, closeDb, query } from "../lib/db.ts";
 import { claimMessage, SITE } from "../lib/signing.ts";
 
 const root = process.cwd();
@@ -18,11 +18,16 @@ const upDir = path.join(root, "public", "uploads");
 fs.mkdirSync(upDir, { recursive: true });
 
 if (process.argv.includes("--reset")) {
-  for (const p of db.prepare("SELECT path FROM proofs").all()) {
+  for (const p of await query("SELECT path FROM proofs")) {
     const base = path.basename(p.path);
     if (base.startsWith("demo-")) fs.rmSync(path.join(upDir, base), { force: true });
   }
-  db.exec("DELETE FROM supports; DELETE FROM proofs; DELETE FROM cases; DELETE FROM nonces;");
+  await batch([
+    { text: "DELETE FROM supports" },
+    { text: "DELETE FROM proofs" },
+    { text: "DELETE FROM cases" },
+    { text: "DELETE FROM nonces" },
+  ]);
   console.log("• wiped existing claims");
 }
 
@@ -107,14 +112,14 @@ const DEMO = [
     story: "Raised on a public roadmap, shipped nothing in five months, then quietly moved the treasury to a new multisig and stopped answering.\n\n15.4k from three buys. I have the treasury movement, the roadmap they deleted, and the last message before they went dark." },
 ];
 
-const insCase = db.prepare(`INSERT INTO cases
+const INSERT_CASE = `INSERT INTO cases
   (id, created_at, updated_at, project_name, ticker, chain, contract, amount_usd, category, story,
    refund_wallet, wallet_address, signature, signed_at, signed_nonce, signed_site, tx_hash, evidence_url,
    contact, reporter, status, admin_note, supports, views, author_hash)
-  VALUES (@id, @created, @updated, @p, @t, 'arc', @ca, @amt, @cat, @story,
-   @wallet, @wallet, @signature, @signedAt, @nonce, @site, @tx, @url,
-   @contact, @who, @st, @note, @sup, @v, @author)`);
-const insProof = db.prepare("INSERT INTO proofs (case_id, path, name, size, position) VALUES (?, ?, ?, ?, ?)");
+  VALUES ($1, $2, $3, $4, $5, 'arc', $6, $7, $8, $9, $10, $10, $11, $12, $13, $14, $15, NULL,
+          NULL, $16, $17, $18, $19, $20, 'demo-seed')`;
+
+const INSERT_PROOF = "INSERT INTO proofs (case_id, path, name, size, position) VALUES ($1, $2, $3, $4, $5)";
 
 let n = 0;
 for (const d of DEMO) {
@@ -138,21 +143,26 @@ for (const d of DEMO) {
       proofCount: proofs.length,
       nonce,
       issuedAt: created,
+      site: SITE,
     }),
   });
 
-  db.transaction(() => {
-    insCase.run({
-      id, created, updated: created + 2 * H, p: d.p, t: d.t, ca: d.ca.toLowerCase(),
-      amt: d.amt, cat: d.cat, story: d.story, wallet, signature, signedAt: created, nonce, site: SITE,
-      tx: "0x" + crypto.randomBytes(32).toString("hex"),
-      url: null, contact: null, who: d.who, st: d.st,
-      note: d.st === "rejected" ? "Announcement screenshot could not be matched to the account's post history." : null,
-      sup: d.sup, v: d.v, author: "demo-seed",
-    });
-    proofs.forEach((pr, i) => insProof.run(id, pr.path, pr.name, pr.size, i));
-  })();
+  await batch([
+    {
+      text: INSERT_CASE,
+      params: [
+        id, created, created + 2 * H, d.p, d.t, d.ca.toLowerCase(), d.amt, d.cat, d.story,
+        wallet, signature, created, nonce, SITE,
+        "0x" + crypto.randomBytes(32).toString("hex"),
+        d.who, d.st,
+        d.st === "rejected" ? "Announcement screenshot could not be matched to the account's post history." : null,
+        d.sup, d.v,
+      ],
+    },
+    ...proofs.map((pr, i) => ({ text: INSERT_PROOF, params: [id, pr.path, pr.name, pr.size, i] })),
+  ]);
   n++;
 }
 
-console.log(`✓ seeded ${n} signed demo claims into data/mgm.db`);
+await closeDb();
+console.log(`✓ seeded ${n} signed demo claims`);
