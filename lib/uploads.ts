@@ -62,6 +62,13 @@ export async function saveProofs(files: File[]): Promise<SavedProof[]> {
       const sig = SIGNATURES.find((s) => s.test(buf));
       if (!sig) throw new UploadError(`"${file.name}" is not a PNG, JPG, WEBP or GIF image`);
 
+      // a serverless host has no writable disk, so the local fallback cannot save us there
+      if (!blobToken() && process.env.VERCEL) {
+        throw new UploadError(
+          "Screenshot storage is not configured on this deployment (Vercel → Storage → Blob).",
+        );
+      }
+
       const name = `${Date.now().toString(36)}-${randomBytes(6).toString("hex")}.${sig.ext}`;
       const path = blobToken() ? await writeBlob(name, buf, sig.mime) : await writeLocal(name, buf);
       saved.push({ path, name: file.name.slice(0, 120) || null, size: buf.length });
