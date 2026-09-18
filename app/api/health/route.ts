@@ -17,6 +17,10 @@ export async function GET() {
     salt: Boolean(process.env.MGM_SALT),
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? null,
     vercel: Boolean(process.env.VERCEL),
+    // names only, never values — shows when an integration used a prefixed name
+    storageVars: Object.keys(process.env)
+      .filter((k) => /BLOB|POSTGRES|DATABASE|NEON/i.test(k))
+      .sort(),
   };
 
   let db: { ok: boolean; claims?: number; error?: string };
