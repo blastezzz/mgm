@@ -21,7 +21,7 @@ export async function GET() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 26,
+          gap: 22,
           backgroundColor: INK,
           backgroundImage:
             "linear-gradient(120deg, rgba(73,237,191,0.13) 0%, rgba(73,237,191,0.03) 30%, rgba(5,8,7,0) 55%)",
@@ -62,21 +62,42 @@ export async function GET() {
           Report the scam, prove the loss,&nbsp;<span style={{ color: JADE }}>claim the refund.</span>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "13px 24px",
-            borderRadius: 999,
-            border: "1px solid #0d604b",
-            background: "rgba(73, 237, 191, 0.07)",
-            fontSize: 23,
-            color: JADE,
-          }}
-        >
-          <div style={{ width: 11, height: 11, borderRadius: 11, background: JADE, display: "flex" }} />
-          100% of $MGM creator fees fund the refund pool
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              padding: "12px 22px",
+              borderRadius: 999,
+              border: "1px solid #0d604b",
+              background: "rgba(73, 237, 191, 0.07)",
+              fontSize: 22,
+              color: JADE,
+            }}
+          >
+            <div style={{ width: 11, height: 11, borderRadius: 11, background: JADE, display: "flex" }} />
+            100% of $MGM creator fees fund the refund pool
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "12px 22px",
+              borderRadius: 999,
+              border: "1px solid #18231e",
+              background: "#0b110f",
+              fontSize: 22,
+              color: "#a8b3ad",
+            }}
+          >
+            $MGM CA drops here first
+          </div>
+        </div>
+
+        <div style={{ display: "flex", fontSize: 20, color: "#6f7e76" }}>
+          open source · github.com/blastezzz/mgm · mgmarcsupport@gmail.com
         </div>
       </div>
     ),
