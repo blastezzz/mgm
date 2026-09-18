@@ -10,7 +10,15 @@ import { LIMITS } from "./validate";
  */
 
 const UPLOAD_DIR_SEGMENTS = ["public", "uploads"] as const;
+
+/**
+ * @vercel/blob authenticates either with a read-write token or, on Vercel, with
+ * the OIDC token it injects plus the store id. Connecting a Blob store in the
+ * dashboard gives you the second form, so requiring the token would reject a
+ * perfectly wired deployment.
+ */
 const blobToken = () => process.env.BLOB_READ_WRITE_TOKEN;
+const blobConfigured = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN ?? process.env.BLOB_STORE_ID);
 
 const SIGNATURES: { ext: string; mime: string; test: (b: Buffer) => boolean }[] = [
   { ext: "png",  mime: "image/png",  test: (b) => b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) },
@@ -34,11 +42,13 @@ async function writeLocal(name: string, buf: Buffer): Promise<string> {
 
 async function writeBlob(name: string, buf: Buffer, mime: string): Promise<string> {
   const { put } = await import("@vercel/blob");
+  const token = blobToken();
   const res = await put(`proofs/${name}`, buf, {
     access: "public",
     contentType: mime,
-    token: blobToken(),
     addRandomSuffix: false,
+    // omitted entirely when absent, so the SDK falls through to OIDC
+    ...(token ? { token } : {}),
   });
   return res.url;
 }
@@ -63,14 +73,14 @@ export async function saveProofs(files: File[]): Promise<SavedProof[]> {
       if (!sig) throw new UploadError(`"${file.name}" is not a PNG, JPG, WEBP or GIF image`);
 
       // a serverless host has no writable disk, so the local fallback cannot save us there
-      if (!blobToken() && process.env.VERCEL) {
+      if (!blobConfigured() && process.env.VERCEL) {
         throw new UploadError(
           "Screenshot storage is not configured on this deployment (Vercel → Storage → Blob).",
         );
       }
 
       const name = `${Date.now().toString(36)}-${randomBytes(6).toString("hex")}.${sig.ext}`;
-      const path = blobToken() ? await writeBlob(name, buf, sig.mime) : await writeLocal(name, buf);
+      const path = blobConfigured() ? await writeBlob(name, buf, sig.mime) : await writeLocal(name, buf);
       saved.push({ path, name: file.name.slice(0, 120) || null, size: buf.length });
     }
   } catch (err) {
@@ -87,7 +97,8 @@ export async function removeProofs(paths: string[]): Promise<void> {
   if (blobs.length) {
     try {
       const { del } = await import("@vercel/blob");
-      await del(blobs, { token: blobToken() });
+      const token = blobToken();
+      await del(blobs, token ? { token } : undefined);
     } catch (err) {
       console.error("[mgm] could not delete blobs", err);
     }

@@ -12,7 +12,8 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const env = {
     databaseUrl: Boolean(process.env.DATABASE_URL ?? process.env.POSTGRES_URL),
-    blobToken: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+    blob: Boolean(process.env.BLOB_READ_WRITE_TOKEN ?? process.env.BLOB_STORE_ID),
+    blobAuth: process.env.BLOB_READ_WRITE_TOKEN ? "token" : process.env.BLOB_STORE_ID ? "oidc" : null,
     adminKey: Boolean(process.env.MGM_ADMIN_KEY),
     salt: Boolean(process.env.MGM_SALT),
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? null,
