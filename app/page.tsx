@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { CaseBoard, type SortKey } from "@/components/CaseBoard";
+import { RefundPool } from "@/components/RefundPool";
+import { TokenBar } from "@/components/TokenBar";
 import { TopClaims } from "@/components/TopClaims";
 import { listCases, getStats } from "@/lib/cases";
 import { usd } from "@/lib/format";
@@ -48,6 +50,11 @@ export default async function Home({
             <Link className="btn btn-ghost btn-lg" href="/how-it-works">How it works ›</Link>
           </div>
 
+          <TokenBar
+            contract={process.env.NEXT_PUBLIC_MGM_CONTRACT?.trim() || null}
+            chartUrl={process.env.NEXT_PUBLIC_MGM_CHART?.trim() || null}
+          />
+
           <div className="stats">
             <div className="stat">
               <div className="stat-k">Total reported</div>
@@ -82,6 +89,10 @@ export default async function Home({
       ) : null}
 
       <div className="shell">
+        <RefundPool
+          poolWallet={process.env.NEXT_PUBLIC_MGM_POOL_WALLET?.trim() || null}
+          refunded={stats.totalRefunded}
+        />
         <TopClaims items={top} />
         <CaseBoard
           items={items}

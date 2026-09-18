@@ -40,7 +40,6 @@ export function SiteFooter() {
             <h4>Community</h4>
             <ul>
               <li><a href="https://x.com" target="_blank" rel="noreferrer noopener">X / Twitter</a></li>
-              <li><a href="https://t.me" target="_blank" rel="noreferrer noopener">Telegram</a></li>
             </ul>
           </div>
         </div>

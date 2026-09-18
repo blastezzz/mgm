@@ -536,7 +536,7 @@ img { display: block; max-width: 100%; }
   overflow: hidden;
 }
 
-.card-media img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.92); }
+.card-media img { width: 100%; height: 100%; object-fit: cover; object-position: top; filter: saturate(0.92); }
 
 .card-media::after {
   content: "";
@@ -871,7 +871,7 @@ img { display: block; max-width: 100%; }
 }
 
 .gallery a:hover { border-color: var(--jade-600); transform: translateY(-2px); }
-.gallery img { width: 100%; height: 100%; object-fit: cover; }
+.gallery img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
 
 .gallery .lbl {
   position: absolute; left: 8px; bottom: 8px;
@@ -1089,3 +1089,123 @@ img { display: block; max-width: 100%; }
 
 .chain-lock b { color: var(--jade-500); font-weight: 500; }
 .chain-lock .lockicon { color: var(--text-tertiary); margin-left: auto; }
+
+/* =========================================================================
+   $MGM token bar + refund pool
+   ========================================================================= */
+
+.token-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--jade-800);
+  border-radius: var(--radius-3);
+  background: linear-gradient(90deg, rgba(73, 237, 191, 0.07), rgba(73, 237, 191, 0.02) 60%, transparent);
+}
+
+.token-bar .tick {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-data);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--jade-500);
+  flex: none;
+}
+
+.token-bar .tick::before {
+  content: "";
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--jade-500);
+  box-shadow: 0 0 0 3px rgba(73, 237, 191, 0.16);
+}
+
+.token-bar .ca {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2);
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+  font-family: var(--font-data);
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+
+.token-bar .ca:hover { border-color: var(--jade-600); }
+.token-bar .ca span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.token-bar .ca[data-pending="true"] { cursor: default; color: var(--text-tertiary); }
+.token-bar .ca[data-pending="true"]:hover { border-color: var(--border-default); }
+
+.token-bar .note {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.token-bar .note b { color: var(--jade-500); font-weight: 500; }
+.token-bar .grow { margin-left: auto; }
+
+@media (max-width: 720px) {
+  .token-bar { gap: var(--space-3); }
+  .token-bar .grow { margin-left: 0; }
+  .token-bar .ca { width: 100%; }
+}
+
+.pool {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--space-8);
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-4);
+  background: var(--bg-surface-1);
+  padding: var(--space-8);
+}
+
+@media (max-width: 880px) { .pool { grid-template-columns: 1fr; gap: var(--space-6); padding: var(--space-6); } }
+
+.pool h3 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.6vw, 28px);
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  margin: 0 0 var(--space-4);
+  line-height: 1.15;
+}
+
+.pool h3 em { font-style: normal; color: var(--jade-500); }
+.pool p { margin: 0 0 var(--space-3); font-size: 14.5px; line-height: 1.7; color: var(--text-secondary); }
+.pool p:last-child { margin-bottom: 0; }
+
+.pool-flow { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.pool-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-3);
+  background: var(--bg-surface-2);
+}
+
+.pool-step .n {
+  flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: var(--radius-1);
+  background: var(--jade-900); color: var(--jade-300);
+  font-family: var(--font-data); font-size: 11px;
+}
+
+.pool-step .t { font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; display: block; margin-bottom: 4px; }
+.pool-step .d { font-family: var(--font-data); font-size: 11.5px; color: var(--text-tertiary); line-height: 1.55; display: block; }
+.pool-step.is-last { border-color: var(--jade-800); background: rgba(73, 237, 191, 0.05); }

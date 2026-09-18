@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { StatusBadge } from "@/components/StatusBadge";
 import { IconSpinner } from "@/components/Icons";
 import { ago, usd } from "@/lib/format";
+import { isVectorProof } from "@/lib/images";
 import { storeAdminKey, useStoredAdminKey } from "@/lib/clientStore";
 import { STATUS_LABEL, STATUS_ORDER, type CaseStatus, type RefundCase } from "@/lib/types";
 
@@ -135,8 +137,16 @@ function AdminRow({
     <div className="panel" style={{ padding: 18 }}>
       <div style={{ display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
         {c.proofs[0] ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img className="row-thumb" style={{ width: 60, height: 60 }} src={c.proofs[0].path} alt="" />
+          <Image
+            className="row-thumb"
+            style={{ width: 60, height: 60 }}
+            src={c.proofs[0].path}
+            alt=""
+            width={60}
+            height={60}
+            sizes="60px"
+            unoptimized={isVectorProof(c.proofs[0].path)}
+          />
         ) : null}
 
         <div style={{ flex: "1 1 220px", minWidth: 0 }}>

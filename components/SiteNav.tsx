@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { Logo } from "./Logo";
-import { IconClose, IconMenu, IconSearch, IconTelegram, IconX } from "./Icons";
+import { IconClose, IconMenu, IconSearch, IconX } from "./Icons";
 
 function NavSearchField({ initial }: { initial: string }) {
   const router = useRouter();
@@ -59,9 +59,6 @@ export function SiteNav() {
           <Link className="nav-link" href="/how-it-works" data-active={pathname === "/how-it-works"}>
             How it works
           </Link>
-          <a className="icon-btn nav-social" href="https://t.me" target="_blank" rel="noreferrer noopener" aria-label="Telegram">
-            <IconTelegram />
-          </a>
           <a className="icon-btn nav-social" href="https://x.com" target="_blank" rel="noreferrer noopener" aria-label="X">
             <IconX />
           </a>
@@ -90,7 +87,6 @@ export function SiteNav() {
             <Link href="/?sort=refunded#claims">Refunded <span>›</span></Link>
             <Link href="/how-it-works">How it works <span>›</span></Link>
             <a href="https://x.com" target="_blank" rel="noreferrer noopener">X / Twitter <span>↗</span></a>
-            <a href="https://t.me" target="_blank" rel="noreferrer noopener">Telegram <span>↗</span></a>
           </div>
         </div>
       ) : null}

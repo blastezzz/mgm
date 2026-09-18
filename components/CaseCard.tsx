@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { StatusBadge } from "./StatusBadge";
 import { ago, shortAddr, usd } from "@/lib/format";
+import { isVectorProof } from "@/lib/images";
 import { CATEGORY_LABEL, SUPPORT_THRESHOLD, type RefundCase } from "@/lib/types";
 
 function pct(c: RefundCase) {
@@ -13,8 +15,14 @@ export function CaseCard({ c, rank }: { c: RefundCase; rank?: number }) {
     <Link href={`/case/${c.id}`} className="card">
       <div className="card-media">
         {cover ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={cover} alt={`Proof submitted for ${c.projectName}`} loading="lazy" />
+          <Image
+            src={cover}
+            alt={`Proof submitted for ${c.projectName}`}
+            fill
+            sizes="(max-width: 520px) 100vw, (max-width: 820px) 50vw, (max-width: 1080px) 33vw, 280px"
+            unoptimized={isVectorProof(cover)}
+            style={{ objectFit: "cover", objectPosition: "top" }}
+          />
         ) : null}
         <div className="card-media-top">
           {rank ? <span className="rank">#{rank}</span> : <span className="rank">{c.id.replace("MGM-", "")}</span>}
@@ -60,8 +68,15 @@ export function CaseRow({ c, rank }: { c: RefundCase; rank: number }) {
     <Link href={`/case/${c.id}`} className="row">
       <span className="row-num" style={{ color: "var(--text-tertiary)" }}>#{rank}</span>
       {cover ? (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img className="row-thumb" src={cover} alt="" loading="lazy" />
+        <Image
+          className="row-thumb"
+          src={cover}
+          alt=""
+          width={44}
+          height={44}
+          sizes="44px"
+          unoptimized={isVectorProof(cover)}
+        />
       ) : (
         <span className="row-thumb" />
       )}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CopyValue } from "@/components/CopyValue";
@@ -8,6 +9,7 @@ import { bumpViews, getCase, listCases } from "@/lib/cases";
 import { verifyClaim } from "@/lib/verify";
 import { ago, dateLine, shortAddr, usd } from "@/lib/format";
 import { explorerUrl } from "@/lib/validate";
+import { isVectorProof } from "@/lib/images";
 import { CATEGORY_LABEL, STATUS_LABEL, type CaseStatus } from "@/lib/types";
 import { CaseCard } from "@/components/CaseCard";
 
@@ -94,8 +96,14 @@ export default async function CasePage({ params, searchParams }: Props) {
               <div className="gallery">
                 {c.proofs.map((p, i) => (
                   <a key={p.id} href={p.path} target="_blank" rel="noreferrer noopener">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.path} alt={p.name ?? `Proof ${i + 1} for ${c.projectName}`} loading="lazy" />
+                    <Image
+                      src={p.path}
+                      alt={p.name ?? `Proof ${i + 1} for ${c.projectName}`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 320px"
+                      unoptimized={isVectorProof(p.path)}
+                      style={{ objectFit: "cover", objectPosition: "top" }}
+                    />
                     <span className="lbl">PROOF {String(i + 1).padStart(2, "0")}</span>
                   </a>
                 ))}
