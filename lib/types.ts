@@ -1,6 +1,6 @@
 export type CaseStatus = "pending" | "reviewing" | "verified" | "refunded" | "rejected";
 
-/** MGM only accepts claims against tokens launched on Arc. */
+/** Tokens are launched on Minara, whose chain is Arc — the only network claims can name. */
 export type Chain = "arc";
 
 export type Category =

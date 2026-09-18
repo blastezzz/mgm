@@ -26,7 +26,7 @@ export default function HowItWorks() {
           Evidence first. Then noise.
         </h1>
         <p style={{ color: "var(--text-secondary)", fontSize: 15.5, lineHeight: 1.7, maxWidth: "66ch", margin: "0 0 40px" }}>
-          MGM is a public claim book for tokens launched on Arc. Anyone who lost money can file the
+          MGM is a public claim book for tokens launched on Minara. Anyone who lost money can file the
           case here — contract address, screenshots, and a signature from the wallet that actually took
           the loss. Nothing gets published without all three, and nothing gets deleted because a team
           asks nicely.
@@ -36,7 +36,7 @@ export default function HowItWorks() {
           <div className="step">
             <div className="n">01</div>
             <h3>Sign and file</h3>
-            <p>Connect MetaMask or Rabby, add the Arc contract, the amount and your screenshots, then sign the claim. One signature, no transaction, no gas, no account.</p>
+            <p>Connect MetaMask or Rabby, add the token contract, the amount and your screenshots, then sign the claim. One signature, no transaction, no gas, no account.</p>
           </div>
           <div className="step">
             <div className="n">02</div>

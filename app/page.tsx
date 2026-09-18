@@ -41,7 +41,7 @@ export default async function Home({
           </h1>
 
           <p className="hero-sub">
-            Minara Get My Money is the public claim book for capital rugged on Arc. Post the contract,
+            Minara Get My Money is the public claim book for capital rugged on Minara. Post the contract,
             attach your screenshots and sign the claim with the wallet that took the loss — no proof and
             no signature means no claim, which is why the ones here are worth reading.
           </p>
@@ -70,7 +70,7 @@ export default async function Home({
               <div className="stat-v good">{usd(stats.totalRefunded)}</div>
             </div>
             <div className="stat">
-              <div className="stat-k">Arc contracts flagged</div>
+              <div className="stat-k">Contracts flagged</div>
               <div className="stat-v">{stats.projectsFlagged.toLocaleString("en-US")}</div>
             </div>
           </div>

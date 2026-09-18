@@ -15,10 +15,10 @@ export const metadata: Metadata = {
     template: "%s · mgm.fund",
   },
   description:
-    "Minara Get My Money is the public claim book for rugged capital. Post your case, attach proof, and let the market see who took the money.",
+    "Minara Get My Money is the public claim book for capital rugged on Minara. Post your case, attach proof, sign with the wallet that took the loss.",
   openGraph: {
     title: "MGM — Minara Get My Money",
-    description: "The public claim book for rugged capital. File your case with proof.",
+    description: "The public claim book for tokens rugged on Minara. File your case with proof.",
     type: "website",
   },
 };

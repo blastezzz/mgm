@@ -66,7 +66,7 @@ export function CaseBoard(props: Props) {
 
         <div className="spacer" />
 
-        <span className="tag" style={{ height: 30 }}>Arc · USDC-native</span>
+        <span className="tag" style={{ height: 30 }}>Minara · Arc</span>
 
         <div className="view-toggle">
           <button onClick={() => setView("grid")} data-active={view === "grid"} aria-label="Grid view"><IconGrid /></button>

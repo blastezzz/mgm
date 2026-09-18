@@ -1,6 +1,6 @@
 # MGM — Minara Get My Money
 
-**[mgm.fund](https://mgm.fund)** — a public claim book for capital rugged on **Arc**.
+**[mgm.fund](https://mgm.fund)** — a public claim book for capital rugged on **Minara**.
 
 Anyone who lost money on a token files a case with the contract address, the
 amount, **screenshot evidence** and a **wallet signature** proving the loss is
@@ -108,7 +108,7 @@ dead end. A claim reaching **100 backers** is escalated into review
   was signed under, so every case page re-verifies server-side on load — and
   renaming the site or moving domains never invalidates signatures collected
   earlier.
-- Arc only: contract addresses are `0x` + 40 hex.
+- Minara only, whose chain is Arc: contract addresses are `0x` + 40 hex.
 - One backing vote per visitor fingerprint; 5 claims/hour per visitor, 3 per wallet.
 
 ## Wallet support

@@ -62,6 +62,10 @@ export async function GET() {
           Report the scam, prove the loss,&nbsp;<span style={{ color: JADE }}>claim the refund.</span>
         </div>
 
+        <div style={{ display: "flex", fontSize: 24, color: "#a8b3ad", marginTop: -8 }}>
+          Refund claims for tokens rugged on Minara
+        </div>
+
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div
             style={{

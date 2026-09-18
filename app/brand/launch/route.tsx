@@ -74,13 +74,13 @@ export async function GET() {
               color: "#a8b3ad",
             }}
           >
-            Arc · USDC-native
+            Minara · Arc
           </div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div style={{ display: "flex", fontSize: 62, fontWeight: 700, letterSpacing: -2.6, color: "#f5f7f6" }}>
-            Rugged on Arc?
+            Rugged on Minara?
           </div>
           <div style={{ display: "flex", fontSize: 62, fontWeight: 700, letterSpacing: -2.6, color: JADE }}>
             File the claim. Get paid back.

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "MGM — Minara Get My Money: evidence-first refund claims for tokens rugged on Arc";
+export const alt = "MGM — Minara Get My Money: evidence-first refund claims for tokens rugged on Minara";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -62,7 +62,7 @@ export default function OpengraphImage() {
           </div>
 
           <div style={{ display: "flex", fontSize: 27, color: "#a8b3ad", maxWidth: 900, lineHeight: 1.45 }}>
-            The public claim book for capital rugged on Arc. Screenshots required, every claim signed
+            The public claim book for capital rugged on Minara. Screenshots required, every claim signed
             by the wallet that took the loss.
           </div>
         </div>

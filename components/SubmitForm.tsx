@@ -195,10 +195,10 @@ export function SubmitForm() {
             <div className="field">
               <label className="label">Network</label>
               <span className="chain-lock">
-                <b>Arc</b> · USDC-native
+                <b>Minara</b> · Arc
                 <span className="lockicon">fixed</span>
               </span>
-              <div className="hint">MGM only takes claims against tokens launched on Arc.</div>
+              <div className="hint">MGM only takes claims against tokens launched on Minara.</div>
             </div>
 
             <div className="field">
