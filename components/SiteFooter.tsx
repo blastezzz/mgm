@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { LogoMark } from "./Logo";
-import { SOURCE_URL, SUPPORT_EMAIL } from "@/lib/types";
+import { CopyValue } from "./CopyValue";
+import { MGM_CONTRACT, POOL_WALLET, SOURCE_URL, SUPPORT_EMAIL } from "@/lib/types";
+import { shortAddr } from "@/lib/format";
 
 export function SiteFooter() {
   return (
@@ -47,6 +49,21 @@ export function SiteFooter() {
               <li><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li>
             </ul>
           </div>
+        </div>
+
+        <div className="footer-addresses">
+          <span className="fa">
+            <span className="k">$MGM contract</span>
+            {MGM_CONTRACT ? (
+              <CopyValue value={MGM_CONTRACT} label={shortAddr(MGM_CONTRACT, 10, 8)} />
+            ) : (
+              <span className="pending">drops at launch</span>
+            )}
+          </span>
+          <span className="fa">
+            <span className="k">Refund pool</span>
+            <CopyValue value={POOL_WALLET} label={shortAddr(POOL_WALLET, 10, 8)} />
+          </span>
         </div>
 
         <div className="footer-note">

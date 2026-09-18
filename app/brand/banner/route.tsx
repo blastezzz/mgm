@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { MGM_CONTRACT } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -92,11 +93,11 @@ export async function GET() {
               borderRadius: 999,
               border: "1px solid #18231e",
               background: "#0b110f",
-              fontSize: 22,
+              fontSize: MGM_CONTRACT ? 19 : 22,
               color: "#a8b3ad",
             }}
           >
-            $MGM CA drops here first
+            {MGM_CONTRACT ? `$MGM ${MGM_CONTRACT}` : "$MGM CA drops here first"}
           </div>
         </div>
 

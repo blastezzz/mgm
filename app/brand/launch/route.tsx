@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { POOL_WALLET } from "@/lib/types";
+import { MGM_CONTRACT, POOL_WALLET } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -74,7 +74,7 @@ export async function GET() {
               color: "#a8b3ad",
             }}
           >
-            Minara · Arc
+            {MGM_CONTRACT ? "$MGM live" : "Minara · Arc"}
           </div>
         </div>
 
@@ -91,6 +91,25 @@ export async function GET() {
           <Point n="1" title="Proof or it never happened" body="Screenshots are mandatory — no evidence, no claim" />
           <Point n="2" title="Signed by the wallet that lost it" body="Nobody can file on someone else's screenshot" />
           <Point n="3" title="100% of $MGM creator fees fund refunds" body={POOL_WALLET} />
+
+          {MGM_CONTRACT ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                marginTop: 4,
+                padding: "12px 20px",
+                borderRadius: 10,
+                border: "1px solid #0d604b",
+                background: "rgba(73,237,191,0.07)",
+                fontSize: 21,
+                color: JADE,
+              }}
+            >
+              $MGM CA&nbsp;<span style={{ color: "#f5f7f6" }}>{MGM_CONTRACT}</span>
+            </div>
+          ) : null}
         </div>
       </div>
     ),

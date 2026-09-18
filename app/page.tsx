@@ -5,7 +5,7 @@ import { TokenBar } from "@/components/TokenBar";
 import { TopClaims } from "@/components/TopClaims";
 import { listCases, getStats } from "@/lib/cases";
 import { usd } from "@/lib/format";
-import { POOL_WALLET } from "@/lib/types";
+import { MGM_CONTRACT, POOL_WALLET } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -52,7 +52,7 @@ export default async function Home({
           </div>
 
           <TokenBar
-            contract={process.env.NEXT_PUBLIC_MGM_CONTRACT?.trim() || null}
+            contract={MGM_CONTRACT || null}
             chartUrl={process.env.NEXT_PUBLIC_MGM_CHART?.trim() || null}
           />
 

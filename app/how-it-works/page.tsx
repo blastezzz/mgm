@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { POOL_WALLET, STATUS_LABEL, STATUS_ORDER, SUPPORT_EMAIL, SUPPORT_THRESHOLD } from "@/lib/types";
+import { MGM_CONTRACT, POOL_WALLET, STATUS_LABEL, STATUS_ORDER, SUPPORT_EMAIL, SUPPORT_THRESHOLD } from "@/lib/types";
 import { StatusBadge } from "@/components/StatusBadge";
 
 export const metadata: Metadata = {
@@ -97,6 +97,20 @@ export default function HowItWorks() {
             income. What the pool receives is the creator fee that the launchpad pays out on that
             volume — every bit of it, rather than a share. The bigger the volume, the bigger the
             pool.
+          </p>
+          <p>
+            {MGM_CONTRACT ? (
+              <>
+                $MGM contract: <code style={{ wordBreak: "break-all" }}>{MGM_CONTRACT}</code>. Verify it
+                against this page before you trade — it is announced here and on the project&apos;s X
+                account, nowhere else.
+              </>
+            ) : (
+              <>
+                $MGM has not launched yet. When it does, the contract address appears here and on the
+                home page; anything circulating before that is fake.
+              </>
+            )}
           </p>
           <p>
             Both directions run through one public address, so anyone can audit it:{" "}

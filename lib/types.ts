@@ -66,6 +66,12 @@ export const CHAIN_LABEL: Record<Chain, string> = { arc: "Arc" };
 /** Public repository — linked from the nav and the footer. */
 export const SOURCE_URL = "https://github.com/blastezzz/mgm";
 
+/**
+ * $MGM contract. Empty until the token launches — every surface then shows the
+ * address instead of "drops at launch", so there is never a placeholder to copy.
+ */
+export const MGM_CONTRACT = process.env.NEXT_PUBLIC_MGM_CONTRACT?.trim() || "";
+
 /** Support inbox, for questions a claim page cannot answer. */
 export const SUPPORT_EMAIL = "mgmarcsupport@gmail.com";
 
